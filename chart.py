@@ -2,8 +2,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from PIL import Image
-import io
 
 # Set random seed for reproducibility
 np.random.seed(42)
@@ -27,8 +25,9 @@ df = pd.DataFrame(data, index=days, columns=hours)
 sns.set_style("whitegrid")
 sns.set_context("notebook", font_scale=1.2)
 
-# Create figure with exact dimensions
-plt.figure(figsize=(8, 8))
+# ---- Key Fix: Generate exactly 512x512 px ----
+# figure size (inches) × dpi = pixels → 512/100 = 5.12 in
+plt.figure(figsize=(5.12, 5.12), dpi=100)
 
 # Create Seaborn heatmap
 ax = sns.heatmap(
@@ -41,20 +40,12 @@ ax = sns.heatmap(
 )
 
 # Customize chart
-plt.title("Customer Engagement Patterns\nby Day and Hour", fontsize=16, fontweight="bold", pad=20)
-plt.xlabel("Hour of Day", fontsize=14, fontweight="semibold")
-plt.ylabel("Day of Week", fontsize=14, fontweight="semibold")
+plt.title("Customer Engagement Patterns\nby Day and Hour", fontsize=14, fontweight="bold", pad=15)
+plt.xlabel("Hour of Day", fontsize=12, fontweight="semibold")
+plt.ylabel("Day of Week", fontsize=12, fontweight="semibold")
 
-# Save to buffer
-buf = io.BytesIO()
-plt.savefig(buf, format="png", dpi=80, facecolor="white", edgecolor="none", bbox_inches="tight")
-buf.seek(0)
-
-# Resize to exactly 512x512 pixels
-img = Image.open(buf)
-img_resized = img.resize((512, 512), Image.Resampling.LANCZOS)
-img_resized.save("chart.png", "PNG", optimize=True)
-buf.close()
+# Save chart directly at 512×512
+plt.savefig("chart.png", dpi=100, bbox_inches="tight")
 
 # Summary statistics
 print("Customer Engagement Heatmap Analysis")
